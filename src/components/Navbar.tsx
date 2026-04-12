@@ -15,7 +15,7 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <Leaf className="h-7 w-7 text-primary" />
+          <img src={logo} alt="AgriSight AI" className="h-8 w-8 rounded-md object-cover" />
           <span className="font-heading text-xl font-bold text-foreground">AgriSight AI</span>
         </Link>
 
