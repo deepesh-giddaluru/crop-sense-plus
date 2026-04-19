@@ -9,10 +9,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const url = new URL(req.url);
-    const location = url.searchParams.get("location");
-    if (!location || location.trim().length === 0) {
-      return new Response(JSON.stringify({ error: "location query param required" }), {
+    const { location } = await req.json().catch(() => ({ location: null }));
+    if (!location || typeof location !== "string" || location.trim().length === 0) {
+      return new Response(JSON.stringify({ error: "location required in body" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
