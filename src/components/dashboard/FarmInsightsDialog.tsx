@@ -56,16 +56,8 @@ export default function FarmInsightsDialog({ farmName, location }: FarmInsightsP
     setError(null);
 
     Promise.all([
-      supabase.functions.invoke("get-weather", {
-        method: "GET",
-        // @ts-expect-error supabase-js supports query in invoke options
-        query: { location },
-      }),
-      supabase.functions.invoke("get-ndvi", {
-        method: "GET",
-        // @ts-expect-error supabase-js supports query in invoke options
-        query: { location },
-      }),
+      supabase.functions.invoke("get-weather", { body: { location } }),
+      supabase.functions.invoke("get-ndvi", { body: { location } }),
     ])
       .then(([w, n]) => {
         if (w.error) throw new Error(w.error.message);
