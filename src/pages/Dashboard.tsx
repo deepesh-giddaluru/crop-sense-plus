@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BarChart3, Leaf, Bell, TrendingUp, MapPin, Calendar, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import AddFarmDialog from "@/components/dashboard/AddFarmDialog";
+import FarmInsightsDialog from "@/components/dashboard/FarmInsightsDialog";
 import { useFarms, type Farm } from "@/hooks/useFarms";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
