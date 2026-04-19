@@ -5,14 +5,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Navbar from "@/components/Navbar";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard");
+    if (isLogin) {
+      navigate("/dashboard");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.from("users").insert({ name, email });
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Account created successfully!");
+    setTimeout(() => navigate("/dashboard"), 800);
   };
 
   return (
@@ -36,25 +53,25 @@ export default function Auth() {
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" placeholder="Juan Dela Cruz" required />
+                <Input id="name" placeholder="Juan Dela Cruz" required value={name} onChange={(e) => setName(e.target.value)} />
               </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" required />
+              <Input id="email" type="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
-                <Input id="phone" type="tel" placeholder="+63 912 345 6789" required />
+                <Input id="phone" type="tel" placeholder="+63 912 345 6789" />
               </div>
             )}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" placeholder="••••••••" required />
             </div>
-            <Button type="submit" className="w-full mt-2">
-              {isLogin ? "Sign In" : "Create Account"}
+            <Button type="submit" className="w-full mt-2" disabled={loading}>
+              {loading ? "Saving..." : isLogin ? "Sign In" : "Create Account"}
             </Button>
           </form>
 
