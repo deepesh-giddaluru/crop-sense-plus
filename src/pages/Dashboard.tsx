@@ -93,6 +93,7 @@ function FarmCard({ farm }: { farm: Farm }) {
           />
         </div>
       </div>
+      <FarmInsightsDialog farmName={farm.name} location={farm.location} />
     </div>
   );
 }
