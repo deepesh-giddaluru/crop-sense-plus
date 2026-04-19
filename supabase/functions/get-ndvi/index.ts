@@ -16,11 +16,10 @@ function hash(str: string): number {
   return (h >>> 0) / 0xffffffff;
 }
 
-Deno.serve((req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
-  const url = new URL(req.url);
-  const location = url.searchParams.get("location") ?? "default";
+  const { location = "default" } = await req.json().catch(() => ({}));
   const seed = hash(location.toLowerCase().trim());
 
   // NDVI between 0.20 and 0.90
