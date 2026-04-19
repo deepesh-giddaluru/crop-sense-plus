@@ -98,6 +98,16 @@ function FarmCard({ farm }: { farm: Farm }) {
 
 export default function Dashboard() {
   const { farms, addFarm } = useFarms();
+  const [users, setUsers] = useState<RegisteredUser[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("users")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data }) => setUsers(data ?? []));
+  }, []);
+
   const totalYield = farms.reduce((s, f) => s + f.yieldPrediction, 0);
   const avgConfidence = Math.round(farms.reduce((s, f) => s + f.confidence, 0) / farms.length);
 
