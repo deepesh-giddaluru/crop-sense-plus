@@ -143,16 +143,38 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Alerts */}
-            <div>
-              <h2 className="font-heading text-xl font-semibold text-foreground mb-4">Smart Alerts</h2>
-              <div className="space-y-3">
-                {alerts.map((alert) => (
-                  <div key={alert.id} className={`rounded-lg p-4 ${alertStyles[alert.type]}`}>
-                    <p className="text-sm text-card-foreground">{alert.message}</p>
-                    <p className="mt-2 text-xs text-muted-foreground">{alert.time}</p>
-                  </div>
-                ))}
+            {/* Alerts + Registered Users */}
+            <div className="space-y-8">
+              <div>
+                <h2 className="font-heading text-xl font-semibold text-foreground mb-4">Smart Alerts</h2>
+                <div className="space-y-3">
+                  {alerts.map((alert) => (
+                    <div key={alert.id} className={`rounded-lg p-4 ${alertStyles[alert.type]}`}>
+                      <p className="text-sm text-card-foreground">{alert.message}</p>
+                      <p className="mt-2 text-xs text-muted-foreground">{alert.time}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Users className="h-5 w-5 text-primary" />
+                  <h2 className="font-heading text-xl font-semibold text-foreground">Registered Users</h2>
+                  <span className="ml-auto text-sm text-muted-foreground">{users.length}</span>
+                </div>
+                <div className="rounded-xl border border-border bg-card divide-y divide-border">
+                  {users.length === 0 ? (
+                    <p className="p-4 text-sm text-muted-foreground">No users yet. Sign up to add one.</p>
+                  ) : (
+                    users.map((u) => (
+                      <div key={u.id} className="p-4">
+                        <p className="font-medium text-card-foreground">{u.name}</p>
+                        <p className="text-sm text-muted-foreground">{u.email}</p>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
