@@ -1,18 +1,10 @@
-import { useEffect, useState } from "react";
 import { BarChart3, Leaf, Bell, TrendingUp, MapPin, Calendar, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import AddFarmDialog from "@/components/dashboard/AddFarmDialog";
 import FarmInsightsDialog from "@/components/dashboard/FarmInsightsDialog";
 import { useFarms, type Farm } from "@/hooks/useFarms";
+import { useRegisteredUsers } from "@/hooks/useRegisteredUsers";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
-
-interface RegisteredUser {
-  id: string;
-  name: string;
-  email: string;
-  created_at: string;
-}
 
 const healthColors = {
   good: "bg-success text-success-foreground",
@@ -100,15 +92,7 @@ function FarmCard({ farm }: { farm: Farm }) {
 
 export default function Dashboard() {
   const { farms, addFarm } = useFarms();
-  const [users, setUsers] = useState<RegisteredUser[]>([]);
-
-  useEffect(() => {
-    supabase
-      .from("users")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => setUsers(data ?? []));
-  }, []);
+  const { users } = useRegisteredUsers();
 
   const totalYield = farms.reduce((s, f) => s + f.yieldPrediction, 0);
   const avgConfidence = farms.length
