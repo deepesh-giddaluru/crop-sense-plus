@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 export interface Farm {
   id: string;
@@ -12,56 +14,72 @@ export interface Farm {
   confidence: number;
 }
 
-const initialFarms: Farm[] = [
-  {
-    id: "1",
-    name: "Sunrise Rice Paddy",
-    location: "Bali, Indonesia",
-    cropType: "Rice",
-    size: "2.5 ha",
-    health: "good",
-    yieldPrediction: 4200,
-    harvestDate: "2026-07-15",
-    confidence: 89,
-  },
-  {
-    id: "2",
-    name: "Green Valley Corn",
-    location: "Cebu, Philippines",
-    cropType: "Corn",
-    size: "1.8 ha",
-    health: "warning",
-    yieldPrediction: 3100,
-    harvestDate: "2026-06-20",
-    confidence: 74,
-  },
-  {
-    id: "3",
-    name: "Highland Vegetables",
-    location: "Chiang Mai, Thailand",
-    cropType: "Mixed Vegetables",
-    size: "0.9 ha",
-    health: "critical",
-    yieldPrediction: 1800,
-    harvestDate: "2026-05-30",
-    confidence: 62,
-  },
-];
+interface FarmRow {
+  id: string;
+  farm_name: string;
+  location: string;
+  crop_type: string;
+  farm_size: string;
+  created_at: string;
+}
+
+function rowToFarm(row: FarmRow): Farm {
+  // Deterministic-ish derived metrics so cards look populated
+  const seed = row.id.charCodeAt(0) + row.id.charCodeAt(1);
+  const healths: Farm["health"][] = ["good", "warning", "critical"];
+  return {
+    id: row.id,
+    name: row.farm_name,
+    location: row.location,
+    cropType: row.crop_type,
+    size: row.farm_size,
+    health: healths[seed % 3],
+    yieldPrediction: 2000 + (seed * 37) % 3000,
+    harvestDate: "2026-08-15",
+    confidence: 70 + (seed % 25),
+  };
+}
 
 export function useFarms() {
-  const [farms, setFarms] = useState<Farm[]>(initialFarms);
+  const [farms, setFarms] = useState<Farm[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const addFarm = (farm: Omit<Farm, "id" | "health" | "yieldPrediction" | "harvestDate" | "confidence">) => {
-    const newFarm: Farm = {
-      ...farm,
-      id: Date.now().toString(),
-      health: "good",
-      yieldPrediction: Math.floor(Math.random() * 3000) + 2000,
-      harvestDate: "2026-08-15",
-      confidence: Math.floor(Math.random() * 20) + 70,
-    };
-    setFarms((prev) => [...prev, newFarm]);
+  const fetchFarms = async () => {
+    const { data, error } = await supabase
+      .from("farms" as any)
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) {
+      toast({ title: "Failed to load farms", description: error.message, variant: "destructive" });
+      setLoading(false);
+      return;
+    }
+    setFarms(((data as unknown as FarmRow[]) ?? []).map(rowToFarm));
+    setLoading(false);
   };
 
-  return { farms, addFarm };
+  useEffect(() => {
+    fetchFarms();
+  }, []);
+
+  const addFarm = async (farm: { name: string; location: string; cropType: string; size: string }) => {
+    const { data, error } = await supabase
+      .from("farms" as any)
+      .insert({
+        farm_name: farm.name,
+        location: farm.location,
+        crop_type: farm.cropType,
+        farm_size: farm.size,
+      })
+      .select()
+      .single();
+    if (error) {
+      toast({ title: "Failed to add farm", description: error.message, variant: "destructive" });
+      return;
+    }
+    setFarms((prev) => [rowToFarm(data as unknown as FarmRow), ...prev]);
+    toast({ title: "Farm added", description: `${farm.name} saved successfully.` });
+  };
+
+  return { farms, addFarm, loading };
 }

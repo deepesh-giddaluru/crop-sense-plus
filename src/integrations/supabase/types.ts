@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      farms: {
+        Row: {
+          created_at: string
+          crop_type: string
+          farm_name: string
+          farm_size: string
+          id: string
+          location: string
+        }
+        Insert: {
+          created_at?: string
+          crop_type: string
+          farm_name: string
+          farm_size: string
+          id?: string
+          location: string
+        }
+        Update: {
+          created_at?: string
+          crop_type?: string
+          farm_name?: string
+          farm_size?: string
+          id?: string
+          location?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string

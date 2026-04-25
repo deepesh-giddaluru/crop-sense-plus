@@ -111,7 +111,9 @@ export default function Dashboard() {
   }, []);
 
   const totalYield = farms.reduce((s, f) => s + f.yieldPrediction, 0);
-  const avgConfidence = Math.round(farms.reduce((s, f) => s + f.confidence, 0) / farms.length);
+  const avgConfidence = farms.length
+    ? Math.round(farms.reduce((s, f) => s + f.confidence, 0) / farms.length)
+    : 0;
 
   return (
     <div className="min-h-screen bg-background">
