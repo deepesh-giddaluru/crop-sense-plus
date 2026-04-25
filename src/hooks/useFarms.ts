@@ -70,14 +70,13 @@ export function useFarms() {
         location: farm.location,
         crop_type: farm.cropType,
         farm_size: farm.size,
-      })
-      .select()
-      .single();
+        user_id: null,
+      });
     if (error) {
       toast({ title: "Failed to add farm", description: error.message, variant: "destructive" });
       return;
     }
-    setFarms((prev) => [rowToFarm(data as unknown as FarmRow), ...prev]);
+    await fetchFarms();
     toast({ title: "Farm added", description: `${farm.name} saved successfully.` });
   };
 
