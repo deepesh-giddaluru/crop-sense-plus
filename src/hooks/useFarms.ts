@@ -63,7 +63,7 @@ export function useFarms() {
   }, []);
 
   const addFarm = async (farm: { name: string; location: string; cropType: string; size: string }) => {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("farms" as any)
       .insert({
         farm_name: farm.name,
